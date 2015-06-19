@@ -1,13 +1,15 @@
-## Provides a memoized value along with the data structure
+## Provides a generic memoize ability that
+## can be used to append any memoized value to
+## the data structure
 makeCacheMatrix <- function(x = matrix()) {
-  m <- NULL
+  m <- list()
   set <- function(y) {
     x <<- y
-    m <<- NULL
+    m <<- list()
   }
   get <- function() x
-  setmemo <- function(memo) m <<- memo
-  getmemo <- function() m
+  setmemo <- function(key, val) m[[key]] <<- val
+  getmemo <- function(key) m[[key]]
   list(set = set, get = get,
        setmemo = setmemo,
        getmemo = getmemo)
@@ -17,13 +19,13 @@ makeCacheMatrix <- function(x = matrix()) {
 ## inverses a cacheMatrix, otherwise returning
 ## the memoized value
 cacheSolve <- function(x, ...) {
-  m <- x$getmemo()
+  ## look for the "solve" cached value
+  m <- x$getmemo("solve")
   if(!is.null(m)) {
     message("getting cached data")
     return(m)
   }
-  data <- x$get()
-  m <- mean(data, ...)
-  x$setmean(m)
+  m <- solve(x$get(), ...)
+  x$setmemo("solve", m)
   m
 }
